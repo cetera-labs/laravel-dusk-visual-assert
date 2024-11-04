@@ -19,8 +19,6 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
             $threshold = $threshold ?? config('visual-assert.default_threshold');
             $metric = $metric ?? config('visual-assert.default_metric');
-            $width = config('visual-assert.screenshot_width');
-            $height = config('visual-assert.screenshot_height');
 
             $filePath = sprintf('%s/references/%s.png', rtrim(Browser::$storeScreenshotsAt, '/'), $name);
 
@@ -34,31 +32,16 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             }
 
             if (!file_exists($filePath)) {
-                $this->resize($width, $height);
                 $this->driver->takeScreenshot($filePath);
                 Assert::assertTrue(true, 'Reference screenshot stored successfully.');
 
                 return $this;
             }
 
-
-            $this->resize($width, $height);
             $this->driver->takeScreenshot($diffFilePath);
 
             $originalImage = new Imagick($filePath);
             $diffImage = new Imagick($diffFilePath);
-
-            if (
-                $originalImage->getImageWidth() !== $diffImage->getImageWidth()
-                || $originalImage->getImageHeight() !== $diffImage->getImageHeight()
-            ) {
-                if (config('visual-assert.skip_if_different_window_size', false)) {
-                    return $this;
-                }
-                Assert::assertTrue(false, sprintf('Screenshots are not the same size, ensure the screenshots are taken using the same Dusk environment.'));
-
-                return $this;
-            }
 
             $result = $originalImage->compareImages($diffImage, $metric);
 
