@@ -1,5 +1,5 @@
 {
-    "name": "rossjcooper/laravel-dusk-visual-assert",
+    "name": "cetera-labs/laravel-dusk-visual-assert",
     "description": "Adds assertions to compare screenshots taken during Laravel Dusk tests",
     "keywords": [
         "laravel",
