@@ -2,6 +2,7 @@
 
 namespace Rossjcooper\LaravelDuskVisualAssert;
 
+use Facebook\WebDriver\WebDriverBy;
 use Imagick;
 use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Assert;
@@ -36,7 +37,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                     $this->driver->takeScreenshot($filePath);
                 }
                 else {
-                    $this->driver->screenshotElement($element, $filePath);
+                    $this->scrollIntoView($element)
+                        ->driver->findElement(WebDriverBy::cssSelector($this->resolver->format($element)))
+                        ->takeElementScreenshot($filePath);
                 }
                 Assert::assertTrue(true, 'Reference screenshot stored successfully.');
 
@@ -47,8 +50,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 $this->driver->takeScreenshot($diffFilePath);
             }
             else {
-                $this->driver->screenshotElement($element, $diffFilePath);
-            }            
+                $this->scrollIntoView($element)
+                    ->driver->findElement(WebDriverBy::cssSelector($this->resolver->format($element)))
+                    ->takeElementScreenshot($diffFilePath);
+            }
 
             $originalImage = new Imagick($filePath);
             $diffImage = new Imagick($diffFilePath);
