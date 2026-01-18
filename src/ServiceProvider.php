@@ -14,7 +14,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             __DIR__ . '/../config/visual-assert.php' => config_path('visual-assert.php'),
         ], 'visual-assert-config');
 
-        Browser::macro('assertScreenshot', function (string $name, float|null $threshold = null, int|null $metric = null) {
+        Browser::macro('assertScreenshot', function (string $name, string|null $element = null, float|null $threshold = null, int|null $metric = null) {
             /** @var Browser $this */
 
             $threshold = $threshold ?? config('visual-assert.default_threshold');
@@ -32,13 +32,23 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             }
 
             if (!file_exists($filePath)) {
-                $this->driver->takeScreenshot($filePath);
+                if ($element === null) {
+                    $this->driver->takeScreenshot($filePath);
+                }
+                else {
+                    $this->driver->screenshotElement($element, $filePath);
+                }
                 Assert::assertTrue(true, 'Reference screenshot stored successfully.');
 
                 return $this;
             }
 
-            $this->driver->takeScreenshot($diffFilePath);
+            if ($element === null) {
+                $this->driver->takeScreenshot($diffFilePath);
+            }
+            else {
+                $this->driver->screenshotElement($element, $diffFilePath);
+            }            
 
             $originalImage = new Imagick($filePath);
             $diffImage = new Imagick($diffFilePath);
