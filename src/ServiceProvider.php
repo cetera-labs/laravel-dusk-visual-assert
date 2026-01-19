@@ -83,7 +83,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
             foreach (Browser::$responsiveScreenSizes as $device => $size) {
                 $this->resize($size['width'], $size['height'])
-                    ->assertScreenshot("$name$device", $threshold, $metric);
+                    ->assertScreenshot("$name$device", null, $threshold, $metric);
             }
 
             return $this;
